@@ -1,24 +1,30 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/HIG52/subwayDatingCourse/config"
+	"github.com/HIG52/subwayDatingCourse/model"
 	"github.com/gin-gonic/gin"
 )
 
-type Member struct {
-	No       int `gorm:"primarykey"`
-	Id       string
-	Password string
-	Name     string
-}
-
 func main() {
 
-	config.DbConnection()
+	db := config.DbConnection()
 
-	router := gin.Default()
+	r := gin.Default()
 
-	router.GET("/")
+	r.GET("/")
 
-	router.Run("localhost:8080")
+	r.GET("/members", func(c *gin.Context) {
+		var members []model.Member
+		result := db.Find(&members)
+		if result.Error != nil { // 에러 체크
+			c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, members)
+	})
+
+	r.Run() // listen and serve on 0.0.0.0:8080
 }
