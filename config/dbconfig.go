@@ -10,7 +10,9 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func DbConnection() *gorm.DB {
+var DB *gorm.DB
+
+func DbConnection() {
 
 	//로그
 	newLogger := logger.New(
@@ -29,5 +31,5 @@ func DbConnection() *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	return db
+	DB = db
 }
